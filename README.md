@@ -1,4 +1,4 @@
-# Task Manager - React Query, Serverless API, & Express Reference Backend (FullStack React Fundamental Project 15)
+# React Query, Serverless API, & Express Reference Backend - React, Vite, JavaScript Fundamental Project 15
 
 This repository bundles two complementary projects:
 
@@ -7,7 +7,7 @@ This repository bundles two complementary projects:
 
 Use this repo to explore modern full-stack patterns, study code organization, and learn how to migrate from a traditional Node server to serverless functions without losing the original implementation.
 
-- **Live-Demo:** [https://react-query-task-manager.netlify.app/](https://react-query-task-manager.netlify.app/)
+- **Live Demo:** [https://react-query-task-manager.netlify.app/](https://react-query-task-manager.netlify.app/)
 
 ![Screenshot 2025-11-07 at 15 16 03](https://github.com/user-attachments/assets/e88ea46d-9fa7-4c09-b292-33f1b149c2b1)
 
@@ -111,7 +111,6 @@ task-manager/
    Visit `http://localhost:5173`. The app defaults to the hosted backend unless configured otherwise (see environment variables).
 
 3. **Optional: emulate serverless functions locally**
-
    - Vercel: `npx vercel dev`
    - Netlify: `npx netlify dev`
 

@@ -1,78 +1,56 @@
-import { updateTask, removeTask } from "../_lib/taskStore.js";
+import {
+  initializeStore,
+  removeTask,
+  updateTask,
+} from "../lib/taskStore.js";
 
-const sendJson = (res, statusCode, payload) => {
-  res.statusCode = statusCode;
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(payload));
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
 };
 
-const parseBody = async (req) => {
-  if (req.body) {
-    return req.body;
-  }
-
-  return new Promise((resolve, reject) => {
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk;
-    });
-    req.on("end", () => {
-      if (!body) {
-        resolve({});
-        return;
-      }
-      try {
-        const parsed = JSON.parse(body);
-        resolve(parsed);
-      } catch (error) {
-        reject(error);
-      }
-    });
-    req.on("error", (error) => reject(error));
-  });
+const jsonResponse = (res, statusCode, body) => {
+  res.setHeader("Content-Type", "application/json");
+  Object.entries(corsHeaders).forEach(([k, v]) => res.setHeader(k, v));
+  res.status(statusCode).end(JSON.stringify(body));
 };
 
 export default async function handler(req, res) {
-  const requestUrl = new URL(req.url, `http://${req.headers.host}`);
-  const idFromQuery = req.query && req.query.id;
-  const idFromPath = requestUrl.pathname.split("/").pop();
-  const taskId = idFromQuery || idFromPath;
+  const taskId = req.query.id;
+  if (!taskId) return jsonResponse(res, 400, { msg: "task id required" });
 
-  if (!taskId) {
-    sendJson(res, 400, { msg: "task id required" });
-    return;
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
+    return res.status(200).end();
   }
+
+  await initializeStore();
 
   if (req.method === "PATCH") {
     try {
-      const body = await parseBody(req);
-      const { isDone } = body;
-      if (typeof isDone !== "boolean") {
-        sendJson(res, 400, { msg: "please provide isDone boolean" });
-        return;
-      }
+      const payload = typeof req.body === "object" ? req.body : (req.body ? JSON.parse(req.body) : {});
+      const { isDone } = payload;
+      if (typeof isDone !== "boolean") return jsonResponse(res, 400, { msg: "please provide isDone boolean" });
       await updateTask(taskId, isDone);
-      sendJson(res, 200, { msg: "task updated" });
+      return jsonResponse(res, 200, { msg: "task updated" });
     } catch (error) {
-      sendJson(res, 500, { msg: "something went wrong" });
+      console.error("PATCH Error:", error);
+      return jsonResponse(res, 500, { msg: "something went wrong" });
     }
-    return;
   }
 
   if (req.method === "DELETE") {
     try {
       await removeTask(taskId);
-      sendJson(res, 200, { msg: "task removed" });
+      return jsonResponse(res, 200, { msg: "task removed" });
     } catch (error) {
-      sendJson(res, 500, { msg: "something went wrong" });
+      console.error("DELETE Error:", error);
+      return jsonResponse(res, 500, { msg: "something went wrong" });
     }
-    return;
   }
 
-  res.setHeader("Allow", "PATCH, DELETE");
-  sendJson(res, 405, { msg: "method not allowed" });
+  return jsonResponse(res, 405, { msg: "method not allowed" });
 }
-
-export const config = {
-  runtime: "nodejs",
-};
