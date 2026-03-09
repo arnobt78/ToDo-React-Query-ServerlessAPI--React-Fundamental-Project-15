@@ -1,6 +1,6 @@
 # Task Manager Backend - Node.js & Express.js (Backend Server Side Rendering Reference)
 
-This directory contains the original Express.js backend that powers the Task Manager project. While the deployed app now runs a serverless API bundled with the frontend, this backend remains a complete, production-ready reference for learning, local testing, or future scaling when a dedicated Node.js service is preferred.
+This directory contains the original Express.js backend that powers the Task Manager project. While the deployed app now runs a serverless API bundled with the frontend, this backend remains a complete, production-ready reference for learning, local testing, or future scaling when a dedicated Node.js service is preferred. (its not used in the production deployment currently)
 
 ---
 
@@ -17,7 +17,7 @@ This directory contains the original Express.js backend that powers the Task Man
 
 ## Project Structure
 
-```text
+```bash
 task-manager-backend/
 ├── localDataServer.js   # Express server with filesystem persistence (tasks.json)
 ├── server.js            # Express server with in-memory task list
@@ -146,7 +146,7 @@ app.patch("/api/tasks/:id", (req, res) => {
   const { isDone } = req.body;
 
   taskList = taskList.map((task) =>
-    task.id === id ? { ...task, isDone } : task
+    task.id === id ? { ...task, isDone } : task,
   );
 
   res.json({ msg: "task updated" });
@@ -240,7 +240,7 @@ This backend offers a clean, well-documented foundation for Express.js developme
 
 Feel free to use this project repository and extend this project further!
 
-If you have any questions or want to share your work, reach out via GitHub or my portfolio at [https://arnob-mahmud.vercel.app/](https://arnob-mahmud.vercel.app/).
+If you have any questions or want to share your work, reach out via GitHub or my portfolio at [https://www.arnobmahmud.com/](https://www.arnobmahmud.com/).
 
 **Enjoy building and learning!** 🚀
 

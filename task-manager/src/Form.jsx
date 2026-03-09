@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { useCreateTask } from "./reactQueryCustomHooks";
 
+/**
+ * Form - Task creation form. Controlled input + submit button.
+ * On submit: calls createTask(title); on success the hook updates cache and we clear the input.
+ * No validation here; API returns 400 if title is missing. Button disabled while mutation is in flight.
+ */
 // Form component for creating new tasks
 // Uses React Query's mutation hook to handle task creation with optimistic updates
 const Form = () => {
-  // Local state to manage the input field value
+  // Local state to manage the input field value (controlled component pattern)
   const [newItemName, setNewItemName] = useState("");
 
   // React Query mutation hook - handles API call and cache updates
@@ -15,6 +20,7 @@ const Form = () => {
   // Handle form submission
   // Prevents default form behavior and triggers the mutation
   // onSuccess callback clears the input field after successful task creation
+  // Prevent full page reload; pass optional onSuccess to clear input after server confirms
   const handleSubmit = (e) => {
     e.preventDefault();
     createTask(newItemName, {
@@ -28,7 +34,7 @@ const Form = () => {
       <h4>task bud</h4>
       <div className="form-control">
         <input
-          type="text "
+          type="text"
           className="form-input"
           value={newItemName}
           onChange={(event) => setNewItemName(event.target.value)}

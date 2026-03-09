@@ -1,4 +1,8 @@
-import React from "react";
+/**
+ * main.jsx - Application entry point (Task Bud)
+ * Responsibilities: mount React app, provide QueryClient to the tree, load global and toast styles.
+ * All components under QueryClientProvider can use useQuery, useMutation, useQueryClient.
+ */
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
@@ -28,7 +32,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Bootstrap the React application
+// Bootstrap the React application into the DOM node with id="root" (see index.html)
 // QueryClientProvider wraps the entire app, making React Query hooks available to all child components
 ReactDOM.createRoot(document.getElementById("root")).render(
   <QueryClientProvider client={queryClient}>

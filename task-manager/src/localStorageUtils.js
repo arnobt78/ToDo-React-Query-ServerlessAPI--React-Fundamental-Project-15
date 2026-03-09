@@ -1,3 +1,9 @@
+/**
+ * localStorageUtils.js - Browser persistence for the task list.
+ * Key: react-query-task-manager. Value: JSON array of { id, title, isDone }.
+ * Used to hydrate React Query initialData and to sync after each successful fetch/mutation.
+ * All functions no-op or return undefined when not in a browser (SSR-safe).
+ */
 // localStorage utility functions for persisting tasks in the browser
 // This provides offline-like functionality - tasks persist across page refreshes
 
@@ -34,7 +40,7 @@ export const readTasksFromStorage = () => {
   }
 };
 
-// Write tasks to browser's localStorage
+// Write tasks to browser's localStorage. taskList must be an array of task objects.
 // Called after successful API responses to keep localStorage in sync with server data
 // This ensures tasks persist even if the server resets (like in serverless cold starts)
 export const writeTasksToStorage = (taskList) => {

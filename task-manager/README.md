@@ -1,30 +1,58 @@
-# Task Manager - React Query + Serverless API (FullStack React Fundamental Project 15)
+# Task Manager | React Query + Serverless API - React, Vite, JavaScript Fundamental Project 15
 
-A production-ready task manager that pairs a Vite-powered React frontend with serverless API routes. The app demonstrates how to fetch, mutate, and persist data with React Query while bundling the backend logic into the same repository for easy deployment to Vercel or Netlify.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![React](https://img.shields.io/badge/React-18.2-blue)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7.2-646CFF)](https://vitejs.dev/)
+[![React Query](https://img.shields.io/badge/React_Query-4.28-FF4154)](https://tanstack.com/query/latest)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-yellow)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
-- **Live-Demo:** [https://react-query-task-manager.netlify.app/](https://react-query-task-manager.netlify.app/)
+An educational fundamental project that pairs a Vite-powered React frontend with a colocated serverless API. It demonstrates fetching, mutating, and persisting data with React Query, plus browser localStorage for instant load and a Vercel-ready API in the same repo—ideal for learning and teaching full-stack React and serverless patterns.
 
-![Screenshot 2025-11-07 at 15 16 03](https://github.com/user-attachments/assets/e88ea46d-9fa7-4c09-b292-33f1b149c2b1)
+- **Live Demo:** [https://task-manager-react-query.vercel.app/](https://task-manager-react-query.vercel.app/)
 
 ---
 
-## Key Features
+## Table of Contents
 
-- React Query-powered CRUD interface with optimistic updates and toast notifications.
-- Serverless REST API (`/api/tasks`) for GET/POST/PATCH/DELETE, backed by a shared task store.
-- Automatic browser `localStorage` sync to keep tasks available across page refreshes.
-- Ready-to-run Netlify Functions and Vercel serverless handlers with identical logic.
-- Educational Express.js reference backend available in `task-manager-backend-reference/` for comparison and future scaling.
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Available Scripts](#available-scripts)
+- [API Endpoints & Routes](#api-endpoints--routes)
+- [Components & Functionality](#components--functionality)
+- [React Query & Data Flow](#react-query--data-flow)
+- [Local Storage Persistence](#local-storage-persistence)
+- [Reusing Components & Hooks](#reusing-components--hooks)
+- [Deployment (Vercel)](#deployment-vercel)
+- [Keywords](#keywords)
+- [License](#license)
+- [Happy Coding!](#happy-coding-)
+
+---
+
+## Features
+
+- **CRUD task list** – Add tasks, mark them done, and delete them with immediate UI feedback.
+- **React Query** – Caching, optimistic updates, and minimal refetches; cache seeded from localStorage for fast first paint.
+- **Serverless REST API** – `/api/tasks` (GET, POST) and `/api/tasks/:id` (PATCH, DELETE) implemented as Vercel serverless functions in `api/`.
+- **Seed data** – `api/tasks.data.json` is loaded on cold start so the list is non-empty by default.
+- **localStorage sync** – Tasks are written to the browser key `react-query-task-manager` after fetch/mutations so refreshes show data instantly.
+- **Toasts** – Success and error feedback via React Toastify (position: bottom-right).
+- **ESLint** – Lint and fix with `npm run lint` and `npm run lint:fix`.
 
 ---
 
 ## Tech Stack
 
-- **Frontend:** React 18, Vite, React Query, React Toastify.
-- **API Layer:** Serverless functions (Vercel-style handlers + Netlify Functions) using Node.js.
-- **Utilities:** Axios, nanoid, browser `localStorage`.
-- **Styling:** Custom CSS (`src/index.css`).
-- **Tooling:** ES Modules, npm scripts, optional Netlify/Vercel CLIs.
+| Layer         | Technology                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| **Frontend**  | React 18, Vite 7, React Query (@tanstack/react-query), React Toastify, Axios                  |
+| **API**       | Node.js serverless (Vercel) in `api/tasks/` and `api/lib/taskStore.js`                        |
+| **Storage**   | In-memory store + seed from `api/tasks.data.json`; optional `REMOTE_TASKS_API` for proxy mode |
+| **Utilities** | nanoid, browser localStorage                                                                  |
+| **Tooling**   | ESLint, ES Modules, npm                                                                       |
 
 ---
 
@@ -33,31 +61,27 @@ A production-ready task manager that pairs a Vite-powered React frontend with se
 ```text
 task-manager/
 ├── api/
-│   ├── _lib/
-│   │   └── taskStore.js        # Shared helpers for reading/writing task data
+│   ├── lib/
+│   │   └── taskStore.js       # Shared store: init, getTasks, createTask, updateTask, removeTask
 │   ├── tasks/
-│   │   ├── index.js            # GET/POST serverless handler
-│   │   └── [id].js             # PATCH/DELETE serverless handler
-│   └── tasks.data.json         # Seed data shipped with the app
-├── netlify/
-│   └── functions/              # Netlify-compatible wrappers (tasks.js, task.js)
-├── public/                     # Static assets (favicon, etc.)
+│   │   ├── index.js           # GET /api/tasks, POST /api/tasks
+│   │   └── [id].js            # PATCH /api/tasks/:id, DELETE /api/tasks/:id
+│   └── tasks.data.json        # Seed data (array of { id, title, isDone })
+├── public/                    # Static assets (e.g. vite.svg favicon)
 ├── src/
-│   ├── App.jsx                 # Root layout
-│   ├── Form.jsx                # Task creation form
-│   ├── Items.jsx               # Task list rendered via React Query
-│   ├── SingleItem.jsx          # Individual task component
-│   ├── reactQueryCustomHooks.jsx
-│   ├── localStorageUtils.js
-│   ├── utils.js                # Axios instance + base URL selection
-│   ├── index.css               # Styles
-│   └── main.jsx                # App bootstrap + QueryClient setup
-├── netlify.toml                # Deploy config (redirects for SPA)
+│   ├── App.jsx                # Layout: ToastContainer, education text, Form, Items
+│   ├── Form.jsx               # Input + "Add Task" button, useCreateTask
+│   ├── Items.jsx              # useFetchTasks, loading/error/empty/list states
+│   ├── SingleItem.jsx         # Checkbox, title, delete button; useEditTask, useDeleteTask
+│   ├── reactQueryCustomHooks.jsx  # useFetchTasks, useCreateTask, useEditTask, useDeleteTask
+│   ├── localStorageUtils.js   # readTasksFromStorage, writeTasksToStorage, removeTasksFromStorage
+│   ├── utils.js               # Axios instance (baseURL from env or /api/tasks)
+│   ├── index.css              # Global and component styles
+│   └── main.jsx               # React root, QueryClientProvider, styles
+├── index.html                 # Entry HTML, SEO meta, React mount
+├── vercel.json                # buildCommand, outputDirectory, SPA rewrites
 ├── package.json
-└── README.md                   # You are here
-
-task-manager-backend-reference/
-└── ...                         # Full Express.js backend (educational reference)
+└── README.md
 ```
 
 ---
@@ -77,68 +101,99 @@ task-manager-backend-reference/
    npm run dev
    ```
 
-   - The Vite dev server runs on `http://localhost:5173` by default.
-   - API calls hit the configured base URL (see Environment Variables below).
+   Open `http://localhost:5173`. By default the app uses `/api/tasks` as the base URL (see [Environment Variables](#environment-variables)).
 
-3. **Optional – run serverless APIs locally**
+3. **Run the serverless API locally (optional)**
 
-   - **Vercel:** `npx vercel dev`
-   - **Netlify:** `npx netlify dev`
+   ```bash
+   npx vercel dev
+   ```
 
-   These commands proxy `/api/tasks` to the local serverless handlers so the frontend uses the same routes it will have in production.
+   This runs both the Vite app and the `api/` routes so you can test the full stack locally.
 
 ---
 
 ## Environment Variables
 
-The project works out-of-the-box without a `.env` file. Use environment variables only if you want to point the frontend at a different API base URL.
+The app runs without any `.env` file. Use environment variables to change the API base URL or to point the serverless store at a remote API.
 
-| Variable            | Default                                                      | Purpose                                                                                                                     |
-| ------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `VITE_API_BASE_URL` | `https://task-management-server-nyfr.onrender.com/api/tasks` | Overrides the Axios base URL defined in `src/utils.js`. Set this to `/api/tasks` when deploying the bundled serverless API. |
+### Frontend (Vite) – `.env` or `.env.local`
 
-### Creating `.env.local`
+Create `.env` or `.env.local` in the `task-manager/` directory. Only variables prefixed with `VITE_` are exposed to the client.
 
-1. Duplicate `.env` (if you create one) or create a new `.env.local` in the project root.
-2. Add your overrides:
+| Variable            | Default      | Purpose                                                                                                                                                                                        |
+| ------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL` | `/api/tasks` | Base URL for all API requests. Use `/api/tasks` when deploying to Vercel. Use `http://localhost:5000/api/tasks` when using the Express reference backend in `task-manager-backend-reference/`. |
 
-   ```env
-   VITE_API_BASE_URL=/api/tasks
-   ```
+**Example `.env.local`**
 
-3. Restart `npm run dev` so Vite picks up the change.
+```env
+# Production (Vercel): use colocated serverless API
+VITE_API_BASE_URL=/api/tasks
+```
 
-> When deploying to Vercel or Netlify, set `VITE_API_BASE_URL=/api/tasks` in the project’s dashboard to ensure the frontend talks to the serverless routes.
+```env
+# Local: use Express reference backend
+VITE_API_BASE_URL=http://localhost:5000/api/tasks
+```
+
+Restart `npm run dev` after changing env vars.
+
+### Serverless API (Vercel / server-side)
+
+Set these in Vercel → Project → Settings → Environment Variables (or in `.env` for `vercel dev`). They are **not** exposed to the browser.
+
+| Variable           | Default | Purpose                                                                                                                                    |
+| ------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `REMOTE_TASKS_API` | (none)  | If set, the in-memory store proxies all operations to this base URL. Use when you want the serverless app to talk to an external task API. |
+
+### Summary: achieving all required environment variables
+
+- **Frontend only (default):** No `.env` needed; app uses `/api/tasks` and works when deployed to Vercel with the colocated API.
+- **Frontend + Vercel:** Add `VITE_API_BASE_URL=/api/tasks` in Vercel’s Environment Variables so the built app targets the same-origin API.
+- **Frontend + Express backend:** Run the backend from `task-manager-backend-reference/`, set `VITE_API_BASE_URL=http://localhost:5000/api/tasks` in `task-manager/.env.local`.
+- **Serverless using remote API:** Set `REMOTE_TASKS_API` to the base URL of your task API (e.g. `https://your-api.com/api/tasks`).
 
 ---
 
 ## Available Scripts
 
-- `npm run dev` – Start the Vite development server.
-- `npm run build` – Build the production-ready bundle (outputs to `dist/`).
-- `npm run preview` – Preview the production build locally.
+| Command            | Description                                              |
+| ------------------ | -------------------------------------------------------- |
+| `npm run dev`      | Start Vite dev server (default `http://localhost:5173`). |
+| `npm run build`    | Production build; output in `dist/`.                     |
+| `npm run preview`  | Serve the production build locally.                      |
+| `npm run lint`     | Run ESLint on `src` (`.js`, `.jsx`).                     |
+| `npm run lint:fix` | Run ESLint with `--fix`.                                 |
 
-Serverless platforms run the handlers in `api/` or `netlify/functions/` automatically—no extra script is required.
+The `api/` directory is deployed as serverless functions by Vercel; no extra build step is required for the API.
 
 ---
 
-## API Endpoints
+## API Endpoints & Routes
 
-All endpoints live under `/api/tasks` once deployed (or under whatever base URL you configure).
+All endpoints live under the base path `/api/tasks` (or whatever you set as `VITE_API_BASE_URL`). The serverless implementation is in `api/tasks/index.js` (list + create) and `api/tasks/[id].js` (update + delete).
 
 ### `GET /api/tasks`
 
 Returns all tasks.
 
+**Response**
+
 ```json
 {
-  "taskList": [{ "id": "abc", "title": "walk the dog", "isDone": false }]
+  "taskList": [
+    { "id": "abc123", "title": "first task", "isDone": true },
+    { "id": "def456", "title": "third task", "isDone": false }
+  ]
 }
 ```
 
 ### `POST /api/tasks`
 
-Creates a task with the given title.
+Creates a task. Request body must include `title` (string).
+
+**Request**
 
 ```http
 POST /api/tasks
@@ -147,34 +202,48 @@ Content-Type: application/json
 { "title": "ship serverless" }
 ```
 
+**Response**
+
 ```json
 {
-  "task": { "id": "xyz", "title": "ship serverless", "isDone": false }
+  "task": { "id": "xyz789", "title": "ship serverless", "isDone": false }
 }
 ```
 
+**Validation:** Missing or empty `title` returns `400` with `{ "msg": "please provide title" }`.
+
 ### `PATCH /api/tasks/:id`
 
-Updates the `isDone` status.
+Updates the task’s `isDone` flag. Request body must include `isDone` (boolean).
+
+**Request**
 
 ```http
-PATCH /api/tasks/xyz
+PATCH /api/tasks/xyz789
 Content-Type: application/json
 
 { "isDone": true }
 ```
 
+**Response**
+
 ```json
 { "msg": "task updated" }
 ```
 
+**Validation:** Missing `id` or invalid `isDone` returns `400` with an appropriate message.
+
 ### `DELETE /api/tasks/:id`
 
-Removes a task.
+Removes the task.
+
+**Request**
 
 ```http
-DELETE /api/tasks/xyz
+DELETE /api/tasks/xyz789
 ```
+
+**Response**
 
 ```json
 { "msg": "task removed" }
@@ -182,137 +251,122 @@ DELETE /api/tasks/xyz
 
 ---
 
-## Frontend Walkthrough
+## Components & Functionality
 
-- `main.jsx` bootstraps React, wraps the app with `QueryClientProvider`, and imports global styles.
-- `App.jsx` renders the overall layout, the submission form, the task list, and the toast container.
-- `Form.jsx` captures user input and calls `useCreateTask` to create tasks. On success, it clears the form and shows a toast.
-- `Items.jsx` uses `useFetchTasks` to load tasks and conditionally renders loading/error states.
-- `SingleItem.jsx` renders each task as a checkbox + label + delete button, delegating logic to `useEditTask` and `useDeleteTask`.
-- `index.css` defines all styling (including form layout, button styles, and transitions).
+### `main.jsx`
 
-Each component is purposefully small, making it easy to lift into other projects.
+- Creates React root and mounts the app inside `#root`.
+- Wraps the tree in `QueryClientProvider` with a long-lived cache (`staleTime: Infinity`, no refetch on focus/mount).
+- Imports global CSS and React Toastify styles.
+
+### `App.jsx`
+
+- Renders the main layout: `ToastContainer` (bottom-right), a short education paragraph, `Form`, and `Items`.
+- Single-page layout; no router.
+
+### `Form.jsx`
+
+- Controlled input for the task title and an “Add Task” button.
+- Uses `useCreateTask()`. On submit: calls the mutation; on success, clears the input and shows a toast. Button is disabled while `isLoading`.
+
+### `Items.jsx`
+
+- Uses `useFetchTasks()` to get `{ isLoading, isError, data }`.
+- Renders: “Loading...”, “There was an error...”, “No tasks found...”, or the list of `SingleItem` components. Validates that `data.taskList` exists and is an array.
+
+### `SingleItem.jsx`
+
+- Receives `item` with `id`, `title`, `isDone`.
+- Checkbox toggles `isDone` via `useEditTask`; title has strikethrough when `isDone`; delete button calls `useDeleteTask` and is disabled while `deleteTaskLoading`.
+
+### `reactQueryCustomHooks.jsx`
+
+- **useFetchTasks** – `queryKey: ["tasks"]`, `queryFn` calls `customFetch.get("")`, `initialData` from `readTasksFromStorage()`, `onSuccess` writes to localStorage, `onError` shows toast. `staleTime: Infinity`, `cacheTime: 24h`.
+- **useCreateTask** – `mutationFn`: `customFetch.post("", { title })`. On success: updates cache with `setQueryData`, appends new task, writes to localStorage, toast.
+- **useEditTask** – `mutationFn`: `customFetch.patch(\`/${taskId}\`, { isDone })`. On success: updates cache and localStorage.
+- **useDeleteTask** – `mutationFn`: `customFetch.delete(\`/${taskId}\`)`. On success: removes task from cache and localStorage.
+
+### `localStorageUtils.js`
+
+- Key: `react-query-task-manager`.
+- **readTasksFromStorage()** – Returns parsed array or `undefined` if missing/invalid or not in browser.
+- **writeTasksToStorage(taskList)** – Saves `taskList` as JSON.
+- **removeTasksFromStorage()** – Clears the key. Safe to call in non-browser (no-op).
+
+### `utils.js`
+
+- Exports an Axios instance with `baseURL`: `import.meta.env.VITE_API_BASE_URL || "/api/tasks"` (trailing slash removed). All API calls from the hooks use this instance.
 
 ---
 
-## React Query Data Flow
+## React Query & Data Flow
 
 ```jsx
-const { isLoading, data } = useQuery({
-  queryKey: ["tasks"],
-  queryFn: async () => {
-    const { data } = await customFetch.get("/");
-    return data;
-  },
-});
+// Fetch: cache-first, hydrate from localStorage, sync from API
+const { isLoading, data, isError } = useFetchTasks();
+// initialData: readTasksFromStorage() → { taskList: [...] }
+// queryFn: GET baseURL → { taskList }
+// onSuccess: writeTasksToStorage(result.taskList)
+
+// Create
+const { createTask, isLoading } = useCreateTask();
+// mutationFn: POST baseURL, body: { title }
+// onSuccess: setQueryData(["tasks"], ...), writeTasksToStorage(...), toast
 ```
 
-- `useFetchTasks` provides caching, refetching, and `localStorage` hydration.
-- Mutations (`useCreateTask`, `useEditTask`, `useDeleteTask`) update the cache immediately via `setQueryData` before refetching, giving the UI instant feedback.
-- Errors trigger `toast.error`, while successes trigger `toast.success` or silent state updates.
+Edit and delete mutations update the same cache and localStorage optimistically; no refetch is required for the UI to stay in sync.
 
 ---
 
 ## Local Storage Persistence
 
-- `localStorageUtils.js` encapsulates read/write helpers keyed by `react-query-task-manager`.
-- On successful fetch or mutation, the hook writes the latest `taskList` to `localStorage`.
-- On app load, React Query seeds its cache from `localStorage` so tasks appear instantly even before the first network request succeeds.
-
-This hybrid approach provides a friendly offline-ish experience without adding a full offline database.
+- **Key:** `react-query-task-manager`
+- **When read:** On app load, `useFetchTasks` can use `initialData` from `readTasksFromStorage()` so the list appears immediately.
+- **When written:** After a successful fetch or after create/edit/delete mutations, the hooks call `writeTasksToStorage(updatedTaskList)`.
+- This gives a smooth experience across refreshes and reduces dependency on the server for the initial render.
 
 ---
 
 ## Reusing Components & Hooks
 
-### Components
-
-- **`Form.jsx`** can be imported into any React project; pass a `createTask` mutation prop or swap in another hook to adapt the behavior.
-- **`SingleItem.jsx`** expects an `item` with `{ id, title, isDone }`. Replace the mutation hooks for different persistence layers.
-
-### Hooks
-
-- **`useFetchTasks`** requires an Axios instance returning `{ taskList }`. Point `customFetch` to any API that matches the response shape.
-- **Mutations** rely on REST conventions (`POST /`, `PATCH /:id`, `DELETE /:id`). Adjust `customFetch` or the hook definitions to target different endpoints or payloads.
-
-Because the hooks centralize data fetching, components stay thin and easy to migrate between projects.
+- **Form.jsx** – Use in any “add item” flow. Replace `useCreateTask` with another mutation or a callback prop to adapt to a different API or domain (e.g. notes, shopping list).
+- **SingleItem.jsx** – Expects `item: { id, title, isDone }`. Swap `useEditTask`/`useDeleteTask` for props or other hooks to reuse in another project.
+- **Hooks** – The four hooks assume the API contract described above. Point `customFetch` (via `VITE_API_BASE_URL`) to any backend that matches this contract to reuse the same UI.
+- **localStorageUtils.js** – Change `STORAGE_KEY` and reuse in other React apps that need to persist a list in the browser.
 
 ---
 
-## Deployment Guide
+## Deployment (Vercel)
 
-### Vercel
+1. Import the repository in Vercel and set **Root Directory** to `task-manager`.
+2. Add environment variable: `VITE_API_BASE_URL=/api/tasks`.
+3. Deploy. Vercel will:
+   - Run `npm run build` (from `vercel.json` or defaults).
+   - Publish the `dist/` output.
+   - Deploy `api/` as serverless functions.
+   - Apply rewrites so non-API routes serve `index.html` (SPA).
 
-1. Connect the repository in the Vercel dashboard.
-2. Set `VITE_API_BASE_URL` to `/api/tasks` (Project Settings → Environment Variables).
-3. Deploy. Vercel automatically detects the Vite build and the `api/` directory for serverless routes.
-
-### Netlify
-
-1. Connect the repository in Netlify.
-2. Ensure the build command is `npm run build` and publish directory is `dist`.
-3. Add environment variable `VITE_API_BASE_URL=/api/tasks`.
-4. (Optional) Include the redirect rules shown below if you need explicit rewrites:
-
-   ```toml
-   [[redirects]]
-     from = "/api/tasks"
-     to = "/.netlify/functions/tasks"
-     status = 200
-     force = true
-
-   [[redirects]]
-     from = "/api/tasks/*"
-     to = "/.netlify/functions/task/:splat"
-     status = 200
-     force = true
-   ```
-
-Netlify deploys the functions defined in `netlify/functions/` automatically.
-
----
-
-## Working with the Express Reference Backend
-
-The standalone Express backend now lives in `task-manager-backend-reference/`.
-
-- It is **not** used in the serverless deployment, but it provides the same REST API for study or future migration to a dedicated Node.js service.
-- Use it when you want to:
-  - Practice Express routing and middleware.
-  - Swap in a database-backed persistence layer.
-  - Run the backend separately once the project grows.
-
-### Running the Express backend
-
-```bash
-cd task-manager-backend-reference
-npm install
-npm start        # for in-memory server
-# or
-npm run local-server   # for file-backed persistence via tasks.json
-```
-
-Point the frontend to this backend by setting `VITE_API_BASE_URL=http://localhost:5000/api/tasks` while it’s running.
+No separate backend server is required; the API is colocated in this project.
 
 ---
 
 ## Keywords
 
-Task manager, React Query, Vite, serverless API, Netlify Functions, Vercel serverless functions, Express.js reference backend, nanoid, localStorage persistence, CRUD tutorial, full-stack React project.
+Task Bud, task manager, React Query, Vite, serverless API, Vercel, React 18, TanStack Query, Axios, localStorage, CRUD, optimistic updates, full-stack React, JavaScript, educational project, REST API.
 
 ---
 
-## Conclusion
+## License
 
-This repository showcases how to unify a modern React frontend with colocated serverless APIs, while keeping a full Express.js backend on standby for deeper exploration. Use it as a template to learn, teach others, or bootstrap your next productivity tool.
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). Feel free to use, modify, and distribute the code as per the terms of the license.
 
 ---
 
 ## Happy Coding! 🎉
 
-Feel free to use this project repository and extend this project further!
+This is an **open-source project** — feel free to use, enhance, and extend it further!
 
-If you have any questions or want to share your work, reach out via GitHub or my portfolio at [https://arnob-mahmud.vercel.app/](https://arnob-mahmud.vercel.app/).
+If you have any questions or want to share your work, reach out via GitHub or my portfolio at [https://www.arnobmahmud.com](https://www.arnobmahmud.com).
 
 **Enjoy building and learning!** 🚀
 

@@ -1,3 +1,9 @@
+/**
+ * reactQueryCustomHooks.jsx - React Query hooks for Task Bud API.
+ * useFetchTasks: GET list, cache + localStorage hydration, sync back to localStorage on success.
+ * useCreateTask / useEditTask / useDeleteTask: mutations with optimistic cache update + localStorage sync + toasts.
+ * All use customFetch (utils.js) for base URL. Response shapes: { taskList } for GET, { task } for POST.
+ */
 // Custom React Query hooks for task management
 // These hooks encapsulate data fetching, mutations, and cache management using React Query
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,7 +15,7 @@ import { readTasksFromStorage, writeTasksToStorage } from "./localStorageUtils";
 // Uses React Query's useQuery for automatic caching, refetching, and state management
 // Configured to prioritize cache over network requests - only fetches when absolutely necessary
 export const useFetchTasks = () => {
-  const { isLoading, data, isError, error } = useQuery({
+  const { isLoading, data, isError } = useQuery({
     // queryKey: unique identifier for this query in React Query's cache
     // Used for cache invalidation and refetching
     queryKey: ["tasks"],
@@ -77,6 +83,7 @@ export const useCreateTask = () => {
     mutationFn: (taskTitle) => customFetch.post("", { title: taskTitle }),
     // onSuccess: callback fired after successful task creation
     // Implements optimistic update pattern: immediately updates UI before refetching
+    // Axios wraps response in { data }; our API returns { task } inside that
     onSuccess: ({ data }) => {
       // Manually update the cache with the new task (optimistic update)
       // This gives instant UI feedback without waiting for a refetch

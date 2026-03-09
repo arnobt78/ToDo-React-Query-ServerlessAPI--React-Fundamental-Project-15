@@ -1,5 +1,9 @@
 import { useDeleteTask, useEditTask } from "./reactQueryCustomHooks";
 
+/**
+ * SingleItem - One task row: checkbox (toggle isDone), title (strikethrough when done), delete button.
+ * Props: item = { id, title, isDone }. Mutations update React Query cache and localStorage; no refetch.
+ */
 // SingleItem component - renders an individual task with checkbox and delete button
 // Each task item can be toggled (checked/unchecked) or deleted
 const SingleItem = ({ item }) => {
