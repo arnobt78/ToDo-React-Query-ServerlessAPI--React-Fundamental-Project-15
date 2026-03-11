@@ -10,7 +10,7 @@ An educational fundamental project that pairs a Vite-powered React frontend with
 
 - **Live Demo:** [https://task-manager-react-query.vercel.app/](https://task-manager-react-query.vercel.app/)
 
----
+![Screenshot 2026-03-11 at 16 06 46](https://github.com/user-attachments/assets/5ccacfa8-55e5-4e82-84e7-9476bac1777b)
 
 ## Table of Contents
 
