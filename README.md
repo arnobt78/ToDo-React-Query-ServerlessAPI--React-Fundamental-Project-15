@@ -10,7 +10,7 @@ This repository bundles two complementary projects for learning and instruction:
 
 - **Live Demo:** [https://task-manager-react-query.vercel.app/](https://task-manager-react-query.vercel.app/)
 
----
+<img width="1329" height="691" alt="Screenshot 2026-03-11 at 16 06 46" src="https://github.com/user-attachments/assets/5ccacfa8-55e5-4e82-84e7-9476bac1777b" />
 
 ## Table of Contents
 
